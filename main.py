@@ -32,7 +32,23 @@ class task_manager:
             while current.next and current.next.task.priority <= new_node.task.priority:
                 current = current.next
             new_node.next = current.next
-            current.next = new_node 
+            current.next = new_node
+
+    def remove_task(self, title):
+         if self.head is None:
+             return
+         if self.head.task.title == title:
+            self.head = self.head.next
+            return
+         else:
+             current = self.head
+             while current.next:
+                 if current.next.task.title == title:
+                     current.next = current.next.next
+                     return
+                 else:
+                     current = current.next
+                     
 
     def print_all_tasks(self):
         current = self.head
@@ -42,17 +58,16 @@ class task_manager:
 
 
 manager = task_manager()
+manager.add_task(Task("Do Laundry", "2026-01-01", 3))
+manager.add_task(Task("Submit Final Project", "2026-02-01", 1))
+manager.add_task(Task("Buy Groceries", "2026-01-02", 2))
 
-t1 = Task("Do Laundry", "2026-01-01", 3)     
-t2 = Task("Submit Final Project", "2026-02-01", 1) 
-t3 = Task("Buy Groceries", "2026-01-02", 2)   
+print("--- Before Deletion (Should be sorted: 1, 2, 3) ---")
+manager.print_all_tasks()
 
+# המחיקה!
+print("\n--- Deleting 'Buy Groceries' (Priority 2)... ---")
+manager.remove_task("Buy Groceries")
 
-print("Adding tasks...")
-manager.add_task(t1) 
-manager.add_task(t2) 
-manager.add_task(t3) 
-
-
-print("\n--- Sorted by Priority ---")
+print("\n--- After Deletion (Should see only 1 and 3) ---")
 manager.print_all_tasks()
