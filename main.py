@@ -24,13 +24,15 @@ class task_manager:
 
     def add_task(self, task):
         new_node = Node(task)
-        if self.head is None:
+        if self.head is None or new_node.task.priority < self.head.task.priority:
+            new_node.next = self.head
             self.head = new_node
         else:
             current = self.head
-            while current.next:
+            while current.next and current.next.task.priority <= new_node.task.priority:
                 current = current.next
-            current.next = new_node
+            new_node.next = current.next
+            current.next = new_node 
 
     def print_all_tasks(self):
         current = self.head
@@ -40,8 +42,17 @@ class task_manager:
 
 
 manager = task_manager()
-t1 = Task("Complete project", "2026-02-21", 1)
-t2 = Task("Submit Algebra paper", "2026-03-01", 2)
-manager.add_task(t1)
-manager.add_task(t2)
+
+t1 = Task("Do Laundry", "2026-01-01", 3)     
+t2 = Task("Submit Final Project", "2026-02-01", 1) 
+t3 = Task("Buy Groceries", "2026-01-02", 2)   
+
+
+print("Adding tasks...")
+manager.add_task(t1) 
+manager.add_task(t2) 
+manager.add_task(t3) 
+
+
+print("\n--- Sorted by Priority ---")
 manager.print_all_tasks()
