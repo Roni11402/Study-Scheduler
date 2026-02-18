@@ -12,6 +12,9 @@ class Task:
     def __str__(self):
         return f"Task: {self.title}, Deadline: {self.deadline}, Priority: {self.priority}, Completed: {self.is_completed}"
 
+    def to_csv(self):
+        return f"{self.title},{self.deadline},{self.priority},{self.is_completed}"
+
 class Node:
     def __init__(self, task):
         self.task = task
@@ -56,18 +59,32 @@ class task_manager:
             print(current.task)
             current = current.next
 
+    def save_to_file(self, file_name):
+        with open(file_name + ".csv", "w") as file:
+            current = self.head
+            while current:
+                line_to_write = current.task.to_csv() + "\n"
+                file.write(line_to_write)
+                current = current.next
+
+    def load_from_file(self, file_name):
+        with open(file_name + ".csv", "r") as file:
+            for line in file:
+                clean_text = line.strip()
+                data = clean_text.split(',')
+                new_task = Task(data[0], data[1], int(data[2]))
+                new_task.is_completed = (data[3] == "True")
+                self.add_task(new_task)
+                           
 
 manager = task_manager()
-manager.add_task(Task("Do Laundry", "2026-01-01", 3))
-manager.add_task(Task("Submit Final Project", "2026-02-01", 1))
-manager.add_task(Task("Buy Groceries", "2026-01-02", 2))
 
-print("--- Before Deletion (Should be sorted: 1, 2, 3) ---")
+print("--- Loading from file... ---")
+manager.load_from_file("my_tasks")
 manager.print_all_tasks()
 
-# המחיקה!
-print("\n--- Deleting 'Buy Groceries' (Priority 2)... ---")
-manager.remove_task("Buy Groceries")
+print("\n--- Adding a new task ---")
+manager.add_task(Task("Learn Python", "2026-03-01", 1))
+manager.save_to_file("my_tasks") 
 
-print("\n--- After Deletion (Should see only 1 and 3) ---")
-manager.print_all_tasks()
+print("Saved! Now close the program and run it again.")
