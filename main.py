@@ -89,7 +89,7 @@ class HeapTaskManager:
     def right_child(self,index):
         return 2*index + 2
 
-    def heapify(self, index):
+    def heapify_up(self, index):
         while index > 0 and self.heap[index].priority < self.heap[self.parent(index)].priority:
             p_index = self.parent(index)
             self.heap[index], self.heap[p_index] = self.heap[p_index], self.heap[index]
@@ -97,17 +97,40 @@ class HeapTaskManager:
 
     def add_task(self, task):
         self.heap.append(task)
-        self.heapify(len(self.heap) - 1)
-                           
+        self.heapify_up(len(self.heap) - 1)
 
-# יצירת המנהל החדש
+    def pop_task(self):
+        if not self.heap:
+            return None
+        if len(self.heap) == 1:
+            return self.heap.pop()
+        min_task = self.heap[0]
+        self.heap[0] = self.heap.pop()
+        self.heapify_down(0)
+        return min_task
+
+    def heapify_down(self,index):
+        while self.left_child(index) < len(self.heap):
+            smaller_child = self.left_child(index)
+            if self.right_child(index) < len(self.heap) and self.heap[self.right_child(index)].priority < self.heap[smaller_child].priority:
+                smaller_child = self.right_child(index)
+            if self.heap[index].priority <= self.heap[smaller_child].priority:
+                break
+            else:
+                self.heap[index], self.heap[smaller_child] = self.heap[smaller_child], self.heap[index]
+                index = smaller_child
+
+
+
 manager = HeapTaskManager()
-
-# הוספת משימות בסדר מבולגן (העדיפות היא המספר האחרון)
 manager.add_task(Task("Do Laundry", "2026-08-10", 5))
 manager.add_task(Task("Submit Algebra Paper", "2026-08-12", 1))
 manager.add_task(Task("Buy Groceries", "2026-08-09", 3))
-
-# בואי נראה מי יושב עכשיו בראש הערימה (באינדקס 0)
-print("The most urgent task is:")
-print(manager.heap[0])
+manager.add_task(Task("Call Parents", "2026-08-16", 2))
+manager.add_task(Task("Pay Bills", "2026-08-20", 4))
+print("Extracting tasks by priority:")
+print("-" * 30)
+popped_task = manager.pop_task()
+while popped_task is not None:
+    print(popped_task)
+    popped_task = manager.pop_task()
