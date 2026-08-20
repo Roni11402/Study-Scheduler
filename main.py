@@ -15,66 +15,6 @@ class Task:
     def to_csv(self):
         return f"{self.title},{self.deadline},{self.priority},{self.is_completed}"
 
-class Node:
-    def __init__(self, task):
-        self.task = task
-        self.next = None
-
-
-# class task_manager:
-#     def __init__(self):
-#         self.head = None
-
-#     def add_task(self, task):
-#         new_node = Node(task)
-#         if self.head is None or new_node.task.priority < self.head.task.priority:
-#             new_node.next = self.head
-#             self.head = new_node
-#         else:
-#             current = self.head
-#             while current.next and current.next.task.priority <= new_node.task.priority:
-#                 current = current.next
-#             new_node.next = current.next
-#             current.next = new_node
-
-#     def remove_task(self, title):
-#          if self.head is None:
-#              return
-#          if self.head.task.title == title:
-#             self.head = self.head.next
-#             return
-#          else:
-#              current = self.head
-#              while current.next:
-#                  if current.next.task.title == title:
-#                      current.next = current.next.next
-#                      return
-#                  else:
-#                      current = current.next
-                     
-
-#     def print_all_tasks(self):
-#         current = self.head
-#         while current:
-#             print(current.task)
-#             current = current.next
-
-#     def save_to_file(self, file_name):
-#         with open(file_name + ".csv", "w") as file:
-#             current = self.head
-#             while current:
-#                 line_to_write = current.task.to_csv() + "\n"
-#                 file.write(line_to_write)
-#                 current = current.next
-
-#     def load_from_file(self, file_name):
-#         with open(file_name + ".csv", "r") as file:
-#             for line in file:
-#                 clean_text = line.strip()
-#                 data = clean_text.split(',')
-#                 new_task = Task(data[0], data[1], int(data[2]))
-#                 new_task.is_completed = (data[3] == "True")
-#                 self.add_task(new_task)
 
 class HeapTaskManager:
     def __init__(self):
@@ -120,17 +60,24 @@ class HeapTaskManager:
                 self.heap[index], self.heap[smaller_child] = self.heap[smaller_child], self.heap[index]
                 index = smaller_child
 
+    def peek(self):
+        if not self.heap:
+            return None
+        else:
+            return self.heap[0]
 
+    def save_to_file(self, file_name):
+         with open(file_name + ".csv", "w") as file:
+             for task in self.heap:
+                 line_to_write = task.to_csv() + "\n"
+                 file.write(line_to_write)
 
-manager = HeapTaskManager()
-manager.add_task(Task("Do Laundry", "2026-08-10", 5))
-manager.add_task(Task("Submit Algebra Paper", "2026-08-12", 1))
-manager.add_task(Task("Buy Groceries", "2026-08-09", 3))
-manager.add_task(Task("Call Parents", "2026-08-16", 2))
-manager.add_task(Task("Pay Bills", "2026-08-20", 4))
-print("Extracting tasks by priority:")
-print("-" * 30)
-popped_task = manager.pop_task()
-while popped_task is not None:
-    print(popped_task)
-    popped_task = manager.pop_task()
+    def load_from_file(self, file_name):
+         with open(file_name + ".csv", "r") as file:
+             for line in file:
+                 clean_text = line.strip()
+                 data = clean_text.split(',')
+                 new_task = Task(data[0], data[1], int(data[2]))
+                 new_task.is_completed = (data[3] == "True")
+                 self.add_task(new_task)
+
